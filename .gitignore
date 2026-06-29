@@ -1,6 +1,54 @@
-.vscode
-.venv
-.idea
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vim/
+
+# OS
 .DS_Store
-venv*
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Python
+.venv/
+venv/
+env/
+ENV/
 */__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Claude Code
+.claude/
+
+# Misc
+*.log
+*.tmp
+*.bak
+.env
+.env.local
