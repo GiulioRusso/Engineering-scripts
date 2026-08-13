@@ -2,15 +2,13 @@
 
 This repository contains **interactive Python scripts for exploring concepts across multiple STEM fields**, including **signal theory, control theory, mathematics, and physics**. Each script is designed to provide **hands-on experimentation, simulations, and visualizations** to make complex concepts easier to understand.
 
+<p align="center">
+  <img src="doc/phased_array.gif" width="50%" alt="Phased array beam steering">
+</p>
+
 ## 📂 Repository Structure
 
-* `scripts/` → Collection of Python scripts organized by topic:
-
-  * `signal-theory/` → Concepts and visualizations related to signal processing
-  * `control-theory/` → Simulations and interactive experiments for control systems
-  * `maths/` → Scripts demonstrating mathematical principles and computations
-  * `physics/` → Interactive physics simulations
-* Other folders may contain supporting utilities, datasets, or visual outputs.
+* `scripts/` → Collection of Python scripts organized by topic.
 
 ## ⚙️ Setup
 
