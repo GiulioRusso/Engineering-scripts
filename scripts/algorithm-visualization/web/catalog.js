@@ -49,4 +49,19 @@ window.CATALOG = [
     { id: 'heap_insert',    name: 'Insert',         view: 'tree', time: 'O(log n)', space: 'O(1)' },
     { id: 'heap_delete',    name: 'Delete',         view: 'tree', time: 'O(log n)', space: 'O(log n)' },
   ]},
+  { chapter: '9 · Grafi', items: [
+    { id: 'graph_repr',     name: 'Matrice e lista', view: 'graph', time: 'O(1) / O(grado)', space: 'O(V²) / O(V+E)' },
+    { id: 'graph_bfs',      name: 'Breadth-First Search', view: 'graph', time: 'O(V + E)', space: 'O(V)' },
+    { id: 'graph_dfs',      name: 'Depth-First Search',   view: 'graph', time: 'O(V + E)', space: 'O(V)' },
+  ]},
+  { chapter: '10 · Cammini minimi', items: [
+    { id: 'dijkstra',       name: 'Dijkstra',       view: 'graph',  time: 'O(V²)',  space: 'O(V)' },
+    { id: 'floyd_warshall', name: 'Floyd-Warshall', view: 'matrix', time: 'O(V³)',  space: 'O(V²)' },
+    { id: 'bellman_ford',   name: 'Bellman-Ford',   view: 'graph',  time: 'O(V·E)', space: 'O(V)' },
+    { id: 'a_star',         name: 'A*',             view: 'graph',  time: 'O(E)',   space: 'O(V)' },
+  ]},
+  { chapter: '11 · Flusso e MST', items: [
+    { id: 'ford_fulkerson', name: 'Ford-Fulkerson', view: 'graph', time: 'O(E · f)',    space: 'O(V²)' },
+    { id: 'kruskal',        name: 'Kruskal',        view: 'graph', time: 'O(E log E)',  space: 'O(V)' },
+  ]},
 ];

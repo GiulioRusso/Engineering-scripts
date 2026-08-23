@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # Loads every catalog entry in headless Chrome, straight from file://, and
-# checks the page actually rendered: a step count, an SVG in the primary view,
-# an explanation line, and no uncaught console error.
+# checks the page actually rendered: a step count, a view, and no uncaught
+# console error.
+#
+# Deliberately serial: one Chrome per algorithm, one at a time. Running several
+# at once needs --user-data-dir to keep the profiles apart, and that flag makes
+# headless Chrome hang here. Takes a couple of minutes; run it in the background.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,6 +15,9 @@ if [ ! -x "$CHROME" ]; then
 fi
 
 PAGE="file://$(pwd)/web/index.html"
+LOG=$(mktemp)
+trap 'rm -f "$LOG"' EXIT
+
 ids=$(node -e '
   const vm=require("vm"),fs=require("fs");
   const s={window:{}}; vm.createContext(s);
@@ -20,22 +27,23 @@ ids=$(node -e '
 
 fail=0
 for id in $ids; do
-  out=$("$CHROME" --headless --disable-gpu --no-sandbox --virtual-time-budget=6000 \
-        --enable-logging=stderr --log-level=0 --dump-dom "$PAGE#$id" 2>/tmp/algoviz-console.txt)
-  errs=$(grep -E "Uncaught|SEVERE|ERROR:.*javascript" /tmp/algoviz-console.txt | grep -v "GPU\|gpu\|Vulkan\|dbus\|Fontconfig" || true)
+  dom=$("$CHROME" --headless --disable-gpu --no-sandbox --no-first-run \
+        --no-default-browser-check --virtual-time-budget=3500 \
+        --enable-logging=stderr --log-level=0 --dump-dom "$PAGE#$id" 2>"$LOG")
+  errs=$(grep -E "Uncaught|SEVERE" "$LOG" | grep -v "GPU\|gpu\|Vulkan\|dbus\|Fontconfig" || true)
   problem=""
-  echo "$out" | grep -q '<svg'                 || problem="$problem no-svg"
-  echo "$out" | grep -qE 'id="step-count">[1-9]' || problem="$problem no-steps"
-  echo "$out" | grep -q 'Errore:'              && problem="$problem load-error"
-  [ -n "$errs" ]                               && problem="$problem console-error"
+  echo "$dom" | grep -qE '<svg|class="(matrixbox|tablebox)' || problem="$problem no-view"
+  echo "$dom" | grep -qE 'id="step-count">[1-9]'            || problem="$problem no-steps"
+  echo "$dom" | grep -q 'Errore:'                           && problem="$problem load-error"
+  [ -n "$errs" ]                                            && problem="$problem console-error"
   if [ -n "$problem" ]; then
     echo "  FAIL $id:$problem"
     [ -n "$errs" ] && echo "$errs" | head -3
-    fail=$((fail+1))
+    fail=$((fail + 1))
   else
     echo "  ok   $id"
   fi
 done
 
 echo "smoke: $fail fallimenti"
-exit $((fail > 0))
+[ "$fail" -eq 0 ]

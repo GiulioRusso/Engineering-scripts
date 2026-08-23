@@ -222,4 +222,61 @@ inline std::string heapTreeJson(const int* a, int n, const IndexMarks& m = Index
     return out + "]}";
 }
 
+// ----------------------------------------------------------------- graph --
+
+// Node coordinates are placed by hand in the C++ and carried into the trace.
+// Never a force-directed layout at runtime: it is unstable, and an algorithm is
+// impossible to follow when the picture rearranges itself between steps.
+class GraphJson {
+  public:
+    // state: "" | "visited" | "frontier" | "current" | "path" | "excluded"
+    GraphJson& node(const std::string& id, const char* state = "",
+                    const std::string& label = "") {
+        if (!nodes_.empty()) nodes_ += ",";
+        nodes_ += Val::quote(id) + ":{\"state\":" + Val::quote(state) +
+                  ",\"label\":" + Val::quote(label) + "}";
+        return *this;
+    }
+    GraphJson& edge(const std::string& from, const std::string& to,
+                    const std::string& label = "", const char* state = "",
+                    bool directed = false) {
+        if (!edges_.empty()) edges_ += ",";
+        edges_ += "{\"from\":" + Val::quote(from) + ",\"to\":" + Val::quote(to) +
+                  ",\"label\":" + Val::quote(label) + ",\"state\":" + Val::quote(state) +
+                  ",\"directed\":" + std::string(directed ? "true" : "false") + "}";
+        return *this;
+    }
+    std::string str() const { return "{\"nodes\":{" + nodes_ + "},\"edges\":[" + edges_ + "]}"; }
+
+  private:
+    std::string nodes_, edges_;
+};
+
+// ---------------------------------------------------------------- matrix --
+
+// Cells are strings so that "∞" and "-" are as easy as a number.
+inline std::string matrixJson(const std::vector<std::string>& labels,
+                              const std::vector<std::vector<std::string>>& cells,
+                              int hlRow = -1, int hlCol = -1, int cellR = -1, int cellC = -1) {
+    std::string s = "{\"labels\":[";
+    for (size_t i = 0; i < labels.size(); ++i) {
+        if (i) s += ",";
+        s += Val::quote(labels[i]);
+    }
+    s += "],\"rows\":[";
+    for (size_t r = 0; r < cells.size(); ++r) {
+        if (r) s += ",";
+        s += "[";
+        for (size_t c = 0; c < cells[r].size(); ++c) {
+            if (c) s += ",";
+            s += Val::quote(cells[r][c]);
+        }
+        s += "]";
+    }
+    s += "],\"hlRow\":" + std::to_string(hlRow);
+    s += ",\"hlCol\":" + std::to_string(hlCol);
+    s += ",\"cell\":[" + std::to_string(cellR) + "," + std::to_string(cellC) + "]}";
+    return s;
+}
+
 }  // namespace trace

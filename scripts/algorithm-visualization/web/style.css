@@ -254,3 +254,43 @@ button:disabled { opacity: .4; cursor: default; }
 .tedge { stroke: var(--ink-dim); stroke-width: 1.6; }
 .tedge.path { stroke: var(--c-frontier); stroke-width: 2.6; }
 .tedge.pruned { stroke: var(--c-excluded); opacity: .35; stroke-dasharray: 4 3; }
+
+/* ------------------------------------------------------- graph / table --- */
+
+.gnode circle { fill: var(--c-neutral); stroke: var(--line); stroke-width: 1.5; }
+.gnode text { fill: var(--ink); font: 600 13px var(--mono); }
+.gnode text.glabel-node { fill: var(--ink-dim); font: 10px var(--mono); }
+.gnode.frontier circle { fill: var(--c-frontier); }
+.gnode.visited circle  { fill: var(--c-visited); }
+.gnode.current circle  { fill: var(--c-selected); }
+.gnode.path circle     { fill: var(--c-sorted); }
+.gnode.frontier text, .gnode.visited text, .gnode.current text, .gnode.path text { fill: #fff; }
+.gnode.excluded circle { fill: var(--c-excluded); opacity: .4; }
+
+.gedge { stroke: var(--ink-dim); stroke-width: 1.8; }
+.gedge.current, .gedge.path { stroke: var(--c-selected); stroke-width: 3; }
+.gedge.accepted { stroke: var(--c-sorted); stroke-width: 3; }
+.gedge.rejected { stroke: var(--c-error); stroke-dasharray: 4 3; }
+.gedge.excluded { stroke: var(--c-excluded); opacity: .4; }
+.gedge.seekable { cursor: pointer; }
+.gedge.seekable:hover { stroke: var(--c-compare); stroke-width: 3.4; }
+text.glabel { fill: var(--ink-dim); font: 600 11px var(--mono); }
+text.glabel.current, text.glabel.path { fill: var(--c-selected); }
+text.glabel.accepted { fill: var(--c-sorted); }
+
+.tablebox table, .matrixbox table { border-collapse: collapse; font: 12px var(--mono); }
+.tablebox.compact table, .matrixbox.compact table { font-size: 11px; }
+.tablebox th, .tablebox td, .matrixbox th, .matrixbox td {
+  border: 1px solid var(--line); padding: 3px 8px; text-align: center; min-width: 34px;
+}
+.tablebox th, .matrixbox th { color: var(--ink-dim); background: var(--panel-2); font-weight: 600; }
+.tablebox td.changed, .matrixbox td.changed {
+  background: color-mix(in srgb, var(--c-compare) 35%, transparent);
+  animation: pulse calc(var(--anim-ms) * 0.9) ease-in-out 2;
+}
+.matrixbox th.hl { color: var(--c-frontier); }
+.matrixbox td.hl { background: color-mix(in srgb, var(--c-frontier) 16%, transparent); }
+.matrixbox td.cell {
+  outline: 2px solid var(--c-selected); outline-offset: -2px;
+  background: color-mix(in srgb, var(--c-selected) 22%, transparent);
+}

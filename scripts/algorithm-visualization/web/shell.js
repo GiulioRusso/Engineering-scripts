@@ -187,9 +187,12 @@
     const t = state.trace;
     const stepList = steps();
 
+    const layout = t.inputs[state.inputIndex].layout || null;
+    const seek = (i) => { pause(); state.step = i; renderStep(1); };
+
     const primaryBox = $('#primary');
     primaryBox.innerHTML = '';
-    state.primary = instantiate(t.view, primaryBox, { steps: stepList, compact: false });
+    state.primary = instantiate(t.view, primaryBox, { steps: stepList, compact: false, layout, seek });
 
     const panelsBox = $('#panels');
     panelsBox.innerHTML = '';
@@ -197,7 +200,8 @@
     (t.panels || []).forEach((p) => {
       const { card, body } = makeCard(p.title || p.view);
       panelsBox.appendChild(card);
-      const r = instantiate(p.view, body, { steps: stepList, compact: true, source: p.source, marks: p.marks });
+      const r = instantiate(p.view, body,
+        { steps: stepList, compact: true, source: p.source, marks: p.marks, layout, seek });
       if (r) state.panels.push({ renderer: r, source: p.source });
     });
 

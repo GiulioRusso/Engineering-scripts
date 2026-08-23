@@ -134,8 +134,12 @@ class StepBuilder {
     }
 
     StepBuilder& table(const std::string& name, KvList cells) {
+        return tableRaw(name, object(cells));
+    }
+    // For a table whose columns are not known at the call site.
+    StepBuilder& tableRaw(const std::string& name, const std::string& rawJson) {
         if (!tables_.empty()) tables_ += ",";
-        tables_ += Val::quote(name) + ":" + object(cells);
+        tables_ += Val::quote(name) + ":" + rawJson;
         return *this;
     }
     StepBuilder& callStack(std::initializer_list<std::string> frames) {
@@ -153,7 +157,20 @@ class StepBuilder {
     // the primary view because it is the result the student is watching form.
     StepBuilder& sequence(const std::string& text) { return put("sequence", Val::quote(text)); }
     StepBuilder& graphState(const std::string& rawJson) { return put("graph", rawJson); }
+    // A named secondary graph, for a panel showing the same network in another
+    // form — the residual graph next to the flow graph, for instance.
+    StepBuilder& graphState(const std::string& name, const std::string& rawJson) {
+        if (!graphs_.empty()) graphs_ += ",";
+        graphs_ += Val::quote(name) + ":" + rawJson;
+        return *this;
+    }
     StepBuilder& treeState(const std::string& rawJson)  { return put("tree", rawJson); }
+    StepBuilder& matrixState(const std::string& rawJson) { return put("matrix", rawJson); }
+    StepBuilder& matrixState(const std::string& name, const std::string& rawJson) {
+        if (!matrices_.empty()) matrices_ += ",";
+        matrices_ += Val::quote(name) + ":" + rawJson;
+        return *this;
+    }
     StepBuilder& listState(const std::string& rawJson)  { return put("list", rawJson); }
     // A named secondary list, for panels that show a different list side by side.
     StepBuilder& listState(const std::string& name, const std::string& rawJson) {
@@ -215,6 +232,8 @@ class StepBuilder {
     std::vector<std::string> regions_;
     std::string tables_;
     std::string lists_;
+    std::string matrices_;
+    std::string graphs_;
     bool emitted_ = false;
 
     friend class Tracer;
@@ -279,6 +298,16 @@ class Tracer {
     }
     Tracer& clearWatches() { watches_.clear(); return *this; }
 
+    // Tables that are present on every step — parent[], rank[], dist[] — are
+    // watched rather than passed step by step. Otherwise the call site needs a
+    // helper to attach them, and a helper is code the source panel would show as
+    // if it were part of the algorithm.
+    Tracer& watchTable(const std::string& name, std::function<std::string()> snapshot) {
+        tableWatches_.push_back({name, std::move(snapshot)});
+        return *this;
+    }
+    Tracer& clearTableWatches() { tableWatches_.clear(); return *this; }
+
     // The call stack is kept by the tracer, not by the algorithm: a recursive
     // function only has to announce its frame, and the bookkeeping lines stay
     // hidden from the source shown in the player.
@@ -314,6 +343,7 @@ class Tracer {
     std::string complexityTime_ = "?", complexitySpace_ = "?";
     std::vector<std::string> panels_;
     std::vector<std::pair<std::string, std::function<std::string()>>> watches_;
+    std::vector<std::pair<std::string, std::function<std::string()>>> tableWatches_;
 
     std::vector<std::string> frames_;
     std::string currentLabel_ = "default";
@@ -352,8 +382,19 @@ inline void StepBuilder::emit() {
         }
         append("regions", r + "]");
     }
-    if (!tables_.empty()) append("tables", "{" + tables_ + "}");
+    if (!tables_.empty() || !t_->tableWatches_.empty()) {
+        std::string all;
+        for (const auto& w : t_->tableWatches_) {
+            if (!all.empty()) all += ",";
+            all += Val::quote(w.first) + ":" + w.second();
+        }
+        // Explicit tables come last so they win over a watch of the same name.
+        if (!tables_.empty()) all += (all.empty() ? "" : ",") + tables_;
+        append("tables", "{" + all + "}");
+    }
     if (!lists_.empty()) append("lists", "{" + lists_ + "}");
+    if (!matrices_.empty()) append("matrices", "{" + matrices_ + "}");
+    if (!graphs_.empty()) append("graphs", "{" + graphs_ + "}");
 
     if (!t_->frames_.empty() && !hasField("callStack")) {
         std::string f = "[";
@@ -432,26 +473,61 @@ inline void Tracer::dump(const std::string& path) {
     // displaySource keeps only the algorithm. lineMap goes from an absolute
     // 1-based source line to an index into displaySource; a hidden line maps to
     // the closest visible line above it, so a step never highlights nothing.
-    std::vector<std::string> display;
-    std::map<int, int> lineMap;
+    //
+    // Two passes: first decide which lines are instrumentation, then drop the
+    // brace-only lines whose whole block turned out to be instrumentation —
+    // otherwise the source panel is left with stray empty { } blocks.
+    std::vector<bool> hidden(lines.size(), false);
     bool inChain = false;
+    bool inHiddenBlock = false;
     for (size_t i = 0; i < lines.size(); ++i) {
         const std::string& raw = lines[i];
-        bool hidden;
+        // Escape hatch for tracer support code that cannot be written as a T.
+        // chain — a helper that builds a snapshot, for instance.
+        if (raw.find("tracer-hide-begin") != std::string::npos) { inHiddenBlock = true; hidden[i] = true; continue; }
+        if (raw.find("tracer-hide-end") != std::string::npos) { inHiddenBlock = false; hidden[i] = true; continue; }
+        if (inHiddenBlock) { hidden[i] = true; continue; }
+
         if (inChain) {
-            hidden = true;
+            hidden[i] = true;
             if (raw.find(".emit();") != std::string::npos) inChain = false;
-        } else if (detail::isInstrumentation(raw)) {
-            hidden = true;
-            const std::string t = detail::trim(raw);
-            if (detail::startsWith(t, "T.") && raw.find(".emit();") == std::string::npos &&
-                raw.find(";") == std::string::npos) {
-                inChain = true;
-            }
-        } else {
-            hidden = false;
+            continue;
         }
-        if (!hidden) display.push_back(raw);
+        // A chain may start as `T.at(...)` or as `auto b = T.at(...);`, and it
+        // runs until .emit();  Anything in between belongs to the tracer.
+        if (raw.find("T.at(") != std::string::npos) {
+            hidden[i] = true;
+            if (raw.find(".emit();") == std::string::npos) inChain = true;
+            continue;
+        }
+        hidden[i] = detail::isInstrumentation(raw);
+    }
+
+    // Second pass: a `{` alone on its line whose block contains nothing but
+    // hidden lines takes its matching `}` with it.
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (hidden[i] || detail::trim(lines[i]) != "{") continue;
+        int depth = 0;
+        size_t close = i;
+        bool allHidden = true;
+        for (size_t j = i; j < lines.size(); ++j) {
+            for (char c : lines[j]) {
+                if (c == '{') depth++;
+                else if (c == '}') depth--;
+            }
+            if (j > i && !hidden[j] && detail::trim(lines[j]) != "}") allHidden = false;
+            if (depth == 0) { close = j; break; }
+        }
+        if (allHidden && close > i && detail::trim(lines[close]) == "}") {
+            hidden[i] = true;
+            hidden[close] = true;
+        }
+    }
+
+    std::vector<std::string> display;
+    std::map<int, int> lineMap;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (!hidden[i]) display.push_back(lines[i]);
         lineMap[static_cast<int>(i) + 1] = static_cast<int>(display.size()) - 1;
     }
 
