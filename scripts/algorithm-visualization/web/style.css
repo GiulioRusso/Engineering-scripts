@@ -177,6 +177,8 @@ button:disabled { opacity: .4; cursor: default; }
 
 .cell.cmp rect     { fill: var(--c-compare); }
 .cell.sel rect     { fill: var(--c-selected); }
+.cell.swap rect    { fill: var(--c-swap); }
+.cell.swap text.v  { fill: #fff; }
 .cell.sel text.v,
 .cell.cmp text.v,
 .cell.found text.v,
@@ -244,7 +246,7 @@ button:disabled { opacity: .4; cursor: default; }
 .tnode.path circle    { fill: var(--c-frontier); }
 .tnode.visited circle { fill: var(--c-visited); }
 .tnode.found circle   { fill: var(--c-sorted); }
-.tnode.moved circle   { fill: var(--c-compare); }
+.tnode.moved circle   { fill: var(--c-swap); }
 .tnode.doomed circle  { fill: var(--c-error); }
 .tnode.current text, .tnode.path text, .tnode.visited text,
 .tnode.found text, .tnode.doomed text { fill: #fff; }

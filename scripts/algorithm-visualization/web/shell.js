@@ -258,6 +258,9 @@
       varsBox.appendChild(c);
     }
 
+    // An empty variables card is just noise; hide it on steps that have none.
+    $('#vars-card').style.display = varsBox.children.length ? '' : 'none';
+
     $('#note').textContent = step.note || '';
     $('#step-count').textContent = (state.step + 1) + ' / ' + list.length;
     $('#scrub').value = state.step;
@@ -353,9 +356,12 @@
   }
 
   function initTheme() {
+    // ?theme=light|dark wins, then the saved choice, then the OS preference.
+    const forced = new URLSearchParams(location.search).get('theme');
     let saved = null;
     try { saved = localStorage.getItem('algoviz-theme'); } catch (_) {}
-    const dark = saved ? saved === 'dark'
+    const dark = forced ? forced === 'dark'
+      : saved ? saved === 'dark'
       : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   }

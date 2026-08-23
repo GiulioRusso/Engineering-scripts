@@ -172,7 +172,7 @@
         case 'select': add(act.index, 'sel'); break;
         case 'found':  add(act.index, 'found'); break;
         case 'assign': add(act.index, 'sel'); break;
-        case 'swap':   add(act.a, 'sel'); add(act.b, 'sel'); break;
+        case 'swap':   add(act.a, 'swap'); add(act.b, 'swap'); break;
         case 'shift':  add(act.from, 'sel'); break;
         case 'error':  for (let i = 0; i < n; i++) add(i, 'err'); break;
         default: break;
@@ -223,7 +223,8 @@
     function legend() {
       return [
         { color: 'var(--c-compare)',  label: 'in confronto' },
-        { color: 'var(--c-selected)', label: 'selezionato / in movimento' },
+        { color: 'var(--c-selected)', label: 'selezionato' },
+        { color: 'var(--c-swap)',     label: 'in scambio' },
         { color: 'var(--c-sorted)',   label: 'ordinato / trovato' },
         { color: 'var(--c-frontier)', label: 'finestra attiva' },
         { color: 'var(--c-excluded)', label: 'scartato' },

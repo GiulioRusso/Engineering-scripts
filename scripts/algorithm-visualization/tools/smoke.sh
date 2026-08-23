@@ -32,7 +32,7 @@ for id in $ids; do
         --enable-logging=stderr --log-level=0 --dump-dom "$PAGE#$id" 2>"$LOG")
   errs=$(grep -E "Uncaught|SEVERE" "$LOG" | grep -v "GPU\|gpu\|Vulkan\|dbus\|Fontconfig" || true)
   problem=""
-  echo "$dom" | grep -qE '<svg|class="(matrixbox|tablebox)' || problem="$problem no-view"
+  echo "$dom" | grep -qE '<svg|class="(matrixbox|tablebox|threads)' || problem="$problem no-view"
   echo "$dom" | grep -qE 'id="step-count">[1-9]'            || problem="$problem no-steps"
   echo "$dom" | grep -q 'Errore:'                           && problem="$problem load-error"
   [ -n "$errs" ]                                            && problem="$problem console-error"
