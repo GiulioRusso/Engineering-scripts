@@ -294,3 +294,13 @@ text.glabel.accepted { fill: var(--c-sorted); }
   outline: 2px solid var(--c-selected); outline-offset: -2px;
   background: color-mix(in srgb, var(--c-selected) 22%, transparent);
 }
+
+/* -------------------------------------------------------------- gantt --- */
+
+.gantt-block { stroke: var(--line); stroke-width: 1; }
+.gantt-block.idle { stroke-dasharray: 3 3; stroke: var(--ink-dim); }
+text.gantt-label { fill: #fff; font: 600 12px var(--mono); }
+text.gantt-tick { fill: var(--ink-dim); font: 10px var(--mono); }
+.gantt-now { stroke: var(--c-selected); stroke-width: 2; }
+.tablebox td.avg { color: var(--c-selected); font-weight: 700; }
+.gantt-ready { margin-top: 6px; font: 12px var(--mono); color: var(--ink-dim); }

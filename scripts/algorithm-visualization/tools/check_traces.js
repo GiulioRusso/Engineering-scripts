@@ -171,6 +171,29 @@ for (const id of Object.keys(TRACES).sort()) {
       }
     }
 
+    // Scheduling: the CPU cannot do more or less work than the sum of the
+    // bursts, so the non-idle Gantt length must equal it exactly.
+    if (['fcfs', 'sjf', 'priority_scheduling', 'round_robin'].includes(id)) {
+      const last = input.steps[input.steps.length - 1];
+      const G = last.gantt;
+      if (G) {
+        const bursts = G.processes.reduce((a, p) => a + p.burst, 0);
+        const busy = (G.slices || []).filter((s) => !s.idle)
+                                     .reduce((a, s) => a + (s.end - s.start), 0);
+        check(bursts === busy,
+              `${where}: somma dei burst ${bursts} ma il Gantt occupa ${busy} unità`);
+        const done = Object.keys(G.metrics || {}).length;
+        check(done === G.processes.length,
+              `${where}: ${done} processi con metriche su ${G.processes.length}`);
+        for (const p of G.processes) {
+          const m = G.metrics[p.name];
+          if (!m) continue;
+          check(m.turn === m.wait + p.burst,
+                `${where}: ${p.name} turnaround ${m.turn} != attesa ${m.wait} + burst ${p.burst}`);
+        }
+      }
+    }
+
     if (SORTS.includes(id)) {
       const first = input.steps.find((s) => s.arrays && s.arrays.a);
       const last = [...input.steps].reverse().find((s) => s.arrays && s.arrays.a);
@@ -182,6 +205,26 @@ for (const id of Object.keys(TRACES).sort()) {
             `${where}: gli elementi finali non sono una permutazione di quelli iniziali`);
     }
   });
+}
+
+// The comparison view reimplements the four schedulers independently; if its
+// averages disagree with the traced implementations, one of the two is wrong.
+if (TRACES.scheduling_compare) {
+  const cmp = TRACES.scheduling_compare.inputs[0].steps.slice(-1)[0].tables;
+  const pairs = { FCFS: 'fcfs', SJF: 'sjf', Priority: 'priority_scheduling', 'Round Robin': 'round_robin' };
+  for (const label in pairs) {
+    const t = TRACES[pairs[label]];
+    if (!t) continue;
+    const G = t.inputs[0].steps.slice(-1)[0].gantt;
+    if (!G) continue;
+    const names = Object.keys(G.metrics);
+    const wait = names.reduce((a, n) => a + G.metrics[n].wait, 0) / names.length;
+    const turn = names.reduce((a, n) => a + G.metrics[n].turn, 0) / names.length;
+    check(Math.abs(Number(cmp['attesa media'][label]) - wait) < 0.005,
+          `confronto: attesa media ${label} = ${cmp['attesa media'][label]}, la traccia dice ${wait.toFixed(2)}`);
+    check(Math.abs(Number(cmp['turnaround medio'][label]) - turn) < 0.005,
+          `confronto: turnaround medio ${label} = ${cmp['turnaround medio'][label]}, la traccia dice ${turn.toFixed(2)}`);
+  }
 }
 
 console.log(`\n${checks} controlli (di cui ${distanceComparisons} distanze verificate contro ` +

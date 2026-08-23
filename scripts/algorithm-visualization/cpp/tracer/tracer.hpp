@@ -179,6 +179,11 @@ class StepBuilder {
         return *this;
     }
     StepBuilder& gantt(const std::string& rawJson)      { return put("gantt", rawJson); }
+    StepBuilder& gantt(const std::string& name, const std::string& rawJson) {
+        if (!gantts_.empty()) gantts_ += ",";
+        gantts_ += Val::quote(name) + ":" + rawJson;
+        return *this;
+    }
     StepBuilder& threads(const std::string& rawJson)    { return put("threads", rawJson); }
 
     // --- actions -----------------------------------------------------------
@@ -234,6 +239,7 @@ class StepBuilder {
     std::string lists_;
     std::string matrices_;
     std::string graphs_;
+    std::string gantts_;
     bool emitted_ = false;
 
     friend class Tracer;
@@ -395,6 +401,7 @@ inline void StepBuilder::emit() {
     if (!lists_.empty()) append("lists", "{" + lists_ + "}");
     if (!matrices_.empty()) append("matrices", "{" + matrices_ + "}");
     if (!graphs_.empty()) append("graphs", "{" + graphs_ + "}");
+    if (!gantts_.empty()) append("gantts", "{" + gantts_ + "}");
 
     if (!t_->frames_.empty() && !hasField("callStack")) {
         std::string f = "[";

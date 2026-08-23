@@ -64,4 +64,11 @@ window.CATALOG = [
     { id: 'ford_fulkerson', name: 'Ford-Fulkerson', view: 'graph', time: 'O(E · f)',    space: 'O(V²)' },
     { id: 'kruskal',        name: 'Kruskal',        view: 'graph', time: 'O(E log E)',  space: 'O(V)' },
   ]},
+  { chapter: '12 · Scheduling', items: [
+    { id: 'fcfs',                name: 'First Come First Served', view: 'gantt', time: 'O(n log n)', space: 'O(n)' },
+    { id: 'sjf',                 name: 'Shortest Job First',      view: 'gantt', time: 'O(n²)',     space: 'O(n)' },
+    { id: 'priority_scheduling', name: 'Priority Scheduling',     view: 'gantt', time: 'O(n²)',     space: 'O(n)' },
+    { id: 'round_robin',         name: 'Round Robin',             view: 'gantt', time: 'O(n)',      space: 'O(n)' },
+    { id: 'scheduling_compare',  name: 'Confronto fra i quattro', view: 'table', time: '—',         space: '—' },
+  ]},
 ];
