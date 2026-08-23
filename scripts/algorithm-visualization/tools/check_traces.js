@@ -194,6 +194,30 @@ for (const id of Object.keys(TRACES).sort()) {
       }
     }
 
+    // Synchronization: the whole point of these traces is which interleavings
+    // do and do not break mutual exclusion, so that is what gets checked.
+    if (['lock_variable', 'petersons_solution', 'semaphores'].includes(id)) {
+      let worst = 0;
+      let limit = 1;
+      for (const st of input.steps) {
+        if (!st.threads) continue;
+        limit = st.threads.maxInCritical === undefined ? 1 : st.threads.maxInCritical;
+        worst = Math.max(worst, st.threads.procs.filter((p) => p.critical).length);
+      }
+      const shouldBreak = /ROMPE/.test(input.label);
+      if (shouldBreak) {
+        check(worst > limit,
+              `${where}: doveva mostrare una violazione, ma non ci sono mai stati più di ${worst} processi dentro`);
+      } else {
+        check(worst <= limit,
+              `${where}: ${worst} processi contemporaneamente dentro, il massimo consentito è ${limit}`);
+      }
+      if (id === 'semaphores' && /deadlock/.test(input.label)) {
+        check(input.steps.some((st) => st.action && st.action.kind === 'error' && st.action.what === 'deadlock'),
+              `${where}: il deadlock non è stato rilevato`);
+      }
+    }
+
     if (SORTS.includes(id)) {
       const first = input.steps.find((s) => s.arrays && s.arrays.a);
       const last = [...input.steps].reverse().find((s) => s.arrays && s.arrays.a);

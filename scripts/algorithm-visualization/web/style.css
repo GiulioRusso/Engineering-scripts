@@ -304,3 +304,34 @@ text.gantt-tick { fill: var(--ink-dim); font: 10px var(--mono); }
 .gantt-now { stroke: var(--c-selected); stroke-width: 2; }
 .tablebox td.avg { color: var(--c-selected); font-weight: 700; }
 .gantt-ready { margin-top: 6px; font: 12px var(--mono); color: var(--ink-dim); }
+
+/* ------------------------------------------------------------ threads --- */
+
+.threads { display: flex; flex-direction: column; gap: 10px; }
+.thr-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.thr-col { flex: 1 1 240px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.thr-col.done { opacity: .55; }
+.thr-head {
+  font: 600 12px var(--mono); padding: 5px 9px; background: var(--panel-2);
+  border-bottom: 1px solid var(--line); color: var(--ink-dim);
+}
+.thr-col.running .thr-head { color: var(--c-frontier); }
+.thr-col.blocked .thr-head { color: var(--c-excluded); }
+.thr-code { font: 12px/1.6 var(--mono); padding: 4px 0; }
+.threads.compact .thr-code { font-size: 11px; }
+.thr-line { padding: 0 9px; white-space: pre; border-left: 3px solid transparent; }
+.thr-line.current   { background: color-mix(in srgb, var(--c-frontier) 26%, transparent); border-left-color: var(--c-frontier); }
+.thr-line.critical  { background: color-mix(in srgb, var(--c-sorted) 26%, transparent);   border-left-color: var(--c-sorted); }
+.thr-line.waiting   { background: color-mix(in srgb, var(--c-compare) 22%, transparent);  border-left-color: var(--c-compare); }
+.thr-line.blocked   { background: color-mix(in srgb, var(--c-excluded) 30%, transparent); border-left-color: var(--c-excluded); }
+.thr-line.violated  { background: color-mix(in srgb, var(--c-error) 34%, transparent);    border-left-color: var(--c-error); font-weight: 700; }
+
+.thr-banner {
+  padding: 7px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  background: color-mix(in srgb, var(--c-error) 22%, transparent);
+  border: 1px solid var(--c-error); color: var(--ink);
+}
+.thr-shared, .thr-blocked { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.thr-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-dim); }
+.thr-none { font: 12px var(--mono); color: var(--ink-dim); }
+.var.blocked { border-color: var(--c-excluded); color: var(--ink-dim); }

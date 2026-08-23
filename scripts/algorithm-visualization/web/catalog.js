@@ -71,4 +71,9 @@ window.CATALOG = [
     { id: 'round_robin',         name: 'Round Robin',             view: 'gantt', time: 'O(n)',      space: 'O(n)' },
     { id: 'scheduling_compare',  name: 'Confronto fra i quattro', view: 'table', time: '—',         space: '—' },
   ]},
+  { chapter: '13 · Sincronizzazione', items: [
+    { id: 'lock_variable',       name: 'Lock variable',       view: 'threads', time: '—', space: 'O(1)' },
+    { id: 'petersons_solution',  name: "Peterson's Solution", view: 'threads', time: '—', space: 'O(1)' },
+    { id: 'semaphores',          name: 'Semafori',            view: 'threads', time: 'O(1)', space: 'O(n)' },
+  ]},
 ];
