@@ -32,4 +32,16 @@ window.CATALOG = [
     { id: 'list_search',    name: 'Search',         view: 'linkedlist', time: 'O(n)', space: 'O(1)' },
     { id: 'list_types',     name: 'Singly / Doubly / Circular', view: 'linkedlist', time: '—', space: 'O(n)' },
   ]},
+  { chapter: '6 · Tree', items: [
+    { id: 'tree_basics',    name: 'Tree n-ario',    view: 'tree', time: 'O(n)', space: 'O(h)' },
+    { id: 'tree_bfs',       name: 'Breadth-First',  view: 'tree', time: 'O(n)', space: 'O(w)' },
+    { id: 'tree_preorder',  name: 'Pre-order',      view: 'tree', time: 'O(n)', space: 'O(h)' },
+    { id: 'tree_inorder',   name: 'In-order',       view: 'tree', time: 'O(n)', space: 'O(h)' },
+    { id: 'tree_postorder', name: 'Post-order',     view: 'tree', time: 'O(n)', space: 'O(h)' },
+  ]},
+  { chapter: '7 · Binary Search Tree', items: [
+    { id: 'bst_search',     name: 'Search',         view: 'tree', time: 'O(h)', space: 'O(1)' },
+    { id: 'bst_insert',     name: 'Insertion',      view: 'tree', time: 'O(h)', space: 'O(h)' },
+    { id: 'bst_delete',     name: 'Delete (3 casi)', view: 'tree', time: 'O(h)', space: 'O(h)' },
+  ]},
 ];

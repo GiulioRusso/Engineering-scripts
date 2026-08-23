@@ -97,4 +97,89 @@ inline std::string listJson(N* head, const char* kind, N* cursor = nullptr,
     return s + "]}";
 }
 
+// ------------------------------------------------------------------ tree --
+
+// Per-node decoration. The algorithm says what each node currently *is*; the
+// renderer only knows how to colour it.
+//   "current" | "path" | "visited" | "found" | "pruned" | "moved" | "doomed"
+struct TreeMarks {
+    std::map<const void*, std::string> state;
+    std::map<const void*, std::string> label;
+
+    TreeMarks& set(const void* p, const char* s) { if (p) state[p] = s; return *this; }
+    TreeMarks& tag(const void* p, const std::string& l) { if (p) label[p] = l; return *this; }
+
+    // Whole binary subtree at once: marking the half a search just discarded is
+    // what turns "O(h)" from a claim into something visible.
+    template <class N>
+    TreeMarks& subtree(N* n, const char* s) {
+        if (!n) return *this;
+        state[n] = s;
+        subtree(n->left, s);
+        subtree(n->right, s);
+        return *this;
+    }
+
+    void emit(const void* p, std::string& out) const {
+        auto it = state.find(p);
+        if (it != state.end()) out += ",\"state\":" + Val::quote(it->second);
+        auto il = label.find(p);
+        if (il != label.end()) out += ",\"label\":" + Val::quote(il->second);
+    }
+};
+
+template <class N>
+inline void emitBinaryNode(N* n, const TreeMarks& m, std::string& out, bool& first) {
+    if (!n) return;
+    if (!first) out += ",";
+    first = false;
+    out += "{\"id\":" + Val::quote(nodeId(n));
+    out += ",\"value\":" + std::to_string(n->data);
+    // A leaf gets no children at all; a half-full node keeps an empty slot on
+    // the missing side so left and right stay visually distinguishable.
+    if (!n->left && !n->right) {
+        out += ",\"children\":[]";
+    } else {
+        out += ",\"children\":[" + Val::quote(nodeId(n->left)) + "," + Val::quote(nodeId(n->right)) + "]";
+    }
+    m.emit(n, out);
+    out += "}";
+    emitBinaryNode(n->left, m, out, first);
+    emitBinaryNode(n->right, m, out, first);
+}
+
+template <class N>
+inline std::string binaryTreeJson(N* root, const TreeMarks& m = TreeMarks()) {
+    std::string out = "{\"root\":" + Val::quote(nodeId(root)) + ",\"nodes\":[";
+    bool first = true;
+    emitBinaryNode(root, m, out, first);
+    return out + "]}";
+}
+
+template <class N>
+inline void emitNaryNode(N* n, const TreeMarks& m, std::string& out, bool& first) {
+    if (!n) return;
+    if (!first) out += ",";
+    first = false;
+    out += "{\"id\":" + Val::quote(nodeId(n));
+    out += ",\"value\":" + std::to_string(n->data);
+    out += ",\"children\":[";
+    for (size_t i = 0; i < n->children.size(); ++i) {
+        if (i) out += ",";
+        out += Val::quote(nodeId(n->children[i]));
+    }
+    out += "]";
+    m.emit(n, out);
+    out += "}";
+    for (auto* c : n->children) emitNaryNode(c, m, out, first);
+}
+
+template <class N>
+inline std::string naryTreeJson(N* root, const TreeMarks& m = TreeMarks()) {
+    std::string out = "{\"root\":" + Val::quote(nodeId(root)) + ",\"nodes\":[";
+    bool first = true;
+    emitNaryNode(root, m, out, first);
+    return out + "]}";
+}
+
 }  // namespace trace

@@ -234,3 +234,23 @@ button:disabled { opacity: .4; cursor: default; }
 .lledge.hot { stroke: var(--c-selected); stroke-width: 2.4; }
 .lledge.dead { stroke: var(--c-error); stroke-dasharray: 4 3; }
 .lledge.back { stroke: var(--c-visited); stroke-width: 1.2; stroke-dasharray: 3 3; }
+
+/* -------------------------------------------------------------- tree ---- */
+
+.tnode circle { fill: var(--c-neutral); stroke: var(--line); stroke-width: 1.5; }
+.tnode text { fill: var(--ink); font: 600 13px var(--mono); }
+.tnode text.tlabel { fill: var(--ink-dim); font: 10px var(--mono); }
+.tnode.current circle { fill: var(--c-selected); }
+.tnode.path circle    { fill: var(--c-frontier); }
+.tnode.visited circle { fill: var(--c-visited); }
+.tnode.found circle   { fill: var(--c-sorted); }
+.tnode.moved circle   { fill: var(--c-compare); }
+.tnode.doomed circle  { fill: var(--c-error); }
+.tnode.current text, .tnode.path text, .tnode.visited text,
+.tnode.found text, .tnode.doomed text { fill: #fff; }
+.tnode.pruned circle  { fill: var(--c-excluded); opacity: .35; }
+.tnode.pruned text    { opacity: .45; }
+
+.tedge { stroke: var(--ink-dim); stroke-width: 1.6; }
+.tedge.path { stroke: var(--c-frontier); stroke-width: 2.6; }
+.tedge.pruned { stroke: var(--c-excluded); opacity: .35; stroke-dasharray: 4 3; }

@@ -149,6 +149,9 @@ class StepBuilder {
         return put("callStack", s + "]");
     }
     StepBuilder& activeThread(Val id)          { return put("activeThread", id.j); }
+    // An output sequence being built up (a traversal order, a path): drawn under
+    // the primary view because it is the result the student is watching form.
+    StepBuilder& sequence(const std::string& text) { return put("sequence", Val::quote(text)); }
     StepBuilder& graphState(const std::string& rawJson) { return put("graph", rawJson); }
     StepBuilder& treeState(const std::string& rawJson)  { return put("tree", rawJson); }
     StepBuilder& listState(const std::string& rawJson)  { return put("list", rawJson); }
