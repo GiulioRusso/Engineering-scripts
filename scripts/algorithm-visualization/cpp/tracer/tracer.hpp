@@ -195,6 +195,10 @@ class StepBuilder {
         return *this;
     }
     StepBuilder& act(KvList a) { return put("action", object(a)); }
+    bool hasField(const std::string& key) const {
+        for (const auto& f : fields_) if (f.first == key) return true;
+        return false;
+    }
 
     Tracer* t_;
     std::vector<std::pair<std::string, std::string>> fields_;
@@ -222,9 +226,12 @@ class Tracer {
 
     // An auxiliary panel rendered under the primary view, in reduced format.
     // `source` names the array/table the panel reads from a step.
+    // `marks` (comma separated) restricts which pointers the panel draws: the
+    // merge panels want only their own index, not every index of the step.
     Tracer& panel(const std::string& view, const std::string& title,
-                  const std::string& source = "") {
-        panels_.push_back(object({{"view", view}, {"title", title}, {"source", source}}));
+                  const std::string& source = "", const std::string& marks = "") {
+        panels_.push_back(object({{"view", view}, {"title", title},
+                                  {"source", source}, {"marks", marks}}));
         return *this;
     }
 
@@ -261,6 +268,14 @@ class Tracer {
     }
     Tracer& clearWatches() { watches_.clear(); return *this; }
 
+    // The call stack is kept by the tracer, not by the algorithm: a recursive
+    // function only has to announce its frame, and the bookkeeping lines stay
+    // hidden from the source shown in the player.
+    Tracer& pushFrame(const std::string& frame) { frames_.push_back(frame); return *this; }
+    Tracer& popFrame() { if (!frames_.empty()) frames_.pop_back(); return *this; }
+    Tracer& clearFrames() { frames_.clear(); return *this; }
+    int depth() const { return static_cast<int>(frames_.size()); }
+
     // Starts a new predefined input. Every algorithm ships several, because the
     // player is static and cannot recompile.
     Tracer& input(const std::string& label) {
@@ -289,6 +304,7 @@ class Tracer {
     std::vector<std::string> panels_;
     std::vector<std::pair<std::string, std::function<std::string()>>> watches_;
 
+    std::vector<std::string> frames_;
     std::string currentLabel_ = "default";
     std::string currentLayout_;
     std::vector<std::string> steps_;
@@ -326,6 +342,15 @@ inline void StepBuilder::emit() {
         append("regions", r + "]");
     }
     if (!tables_.empty()) append("tables", "{" + tables_ + "}");
+
+    if (!t_->frames_.empty() && !hasField("callStack")) {
+        std::string f = "[";
+        for (size_t i = 0; i < t_->frames_.size(); ++i) {
+            if (i) f += ",";
+            f += Val::quote(t_->frames_[i]);
+        }
+        append("callStack", f + "]");
+    }
 
     if (!t_->watches_.empty()) {
         std::string a = "{";

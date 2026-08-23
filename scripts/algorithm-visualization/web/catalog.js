@@ -15,8 +15,14 @@ window.CATALOG = [
     { id: 'insertion_sort', name: 'Insertion Sort', view: 'array', time: 'O(n²)',    space: 'O(1)' },
     { id: 'selection_sort', name: 'Selection Sort', view: 'array', time: 'O(n²)',    space: 'O(1)' },
     { id: 'bubble_sort',    name: 'Bubble Sort',    view: 'array', time: 'O(n²)',    space: 'O(1)' },
+    { id: 'merge_sort',     name: 'Merge Sort',     view: 'array', time: 'O(n log n)', space: 'O(n)' },
+    { id: 'quick_sort',     name: 'Quick Sort',     view: 'array', time: 'O(n log n)', space: 'O(log n)' },
   ]},
   { chapter: '3 · Altro', items: [
     { id: 'kadane',         name: 'Kadane',         view: 'array', time: 'O(n)',     space: 'O(1)' },
+  ]},
+  { chapter: '4 · Stack e Queue', items: [
+    { id: 'stack',          name: 'Stack',          view: 'stack', time: 'O(1)',     space: 'O(n)' },
+    { id: 'queue',          name: 'Queue circolare', view: 'queue', time: 'O(1)',    space: 'O(n)' },
   ]},
 ];

@@ -74,7 +74,11 @@ for (const id of Object.keys(TRACES).sort()) {
         const nxt = input.steps[si + 1].arrays && input.steps[si + 1].arrays.a;
         if (cur && nxt && cur.length === nxt.length) {
           const diff = cur.map((v, k) => (v === nxt[k] ? -1 : k)).filter((k) => k >= 0);
-          check(diff.length === 2 && diff.includes(a.a) && diff.includes(a.b),
+          // Swapping equal values (duplicates, or i === j) is a legitimate no-op
+          // and must leave the array untouched.
+          const noop = cur[a.a] === cur[a.b];
+          check(noop ? diff.length === 0
+                     : diff.length === 2 && diff.includes(a.a) && diff.includes(a.b),
                 `${where} passo ${si}: swap(${a.a},${a.b}) ma l'array cambia in [${diff}]`);
           check(cur[a.a] === nxt[a.b] && cur[a.b] === nxt[a.a],
                 `${where} passo ${si}: i valori scambiati non corrispondono`);

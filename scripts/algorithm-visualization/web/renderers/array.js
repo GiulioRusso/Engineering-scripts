@@ -39,6 +39,11 @@
       GAP = compact ? 4 : 6;
       PAD = 8;
 
+      // A panel can restrict which pointers it draws: the merge panels want only
+      // their own index, not every index of the step.
+      const only = (opts.marks || '').split(',').map((x) => x.trim()).filter(Boolean);
+      const wanted = (name) => only.length === 0 || only.includes(name);
+
       const steps = opts.steps || [];
       n = 0;
       let usesLift = false;
@@ -47,7 +52,7 @@
         const a = pickArray(s, opts);
         if (a && a.length > n) n = a.length;
         if (s.lifted) usesLift = true;
-        if (s.marks) for (const k in s.marks) if (!markNames.includes(k)) markNames.push(k);
+        if (s.marks) for (const k in s.marks) if (!markNames.includes(k) && wanted(k)) markNames.push(k);
       }
       if (!n) n = 1;
 
@@ -125,8 +130,10 @@
       }
 
       // Regions paint the background and also restyle the cells they cover.
+      // Their indices refer to the primary array, so a panel showing a different
+      // array (leftArr, rightArr, ...) must not draw them.
       gRegions.innerHTML = '';
-      const regions = step.regions || [];
+      const regions = opts.source ? [] : (step.regions || []);
       for (const r of regions) {
         const from = Math.max(0, r.from), to = Math.min(n - 1, r.to);
         if (to < from) continue;

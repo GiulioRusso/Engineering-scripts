@@ -197,7 +197,7 @@
     (t.panels || []).forEach((p) => {
       const { card, body } = makeCard(p.title || p.view);
       panelsBox.appendChild(card);
-      const r = instantiate(p.view, body, { steps: stepList, compact: true, source: p.source });
+      const r = instantiate(p.view, body, { steps: stepList, compact: true, source: p.source, marks: p.marks });
       if (r) state.panels.push({ renderer: r, source: p.source });
     });
 
