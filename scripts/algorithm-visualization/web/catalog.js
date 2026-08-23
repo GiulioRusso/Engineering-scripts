@@ -25,4 +25,11 @@ window.CATALOG = [
     { id: 'stack',          name: 'Stack',          view: 'stack', time: 'O(1)',     space: 'O(n)' },
     { id: 'queue',          name: 'Queue circolare', view: 'queue', time: 'O(1)',    space: 'O(n)' },
   ]},
+  { chapter: '5 · Linked List', items: [
+    { id: 'list_access',    name: 'Accessing',      view: 'linkedlist', time: 'O(n)', space: 'O(1)' },
+    { id: 'list_insert',    name: 'Insert',         view: 'linkedlist', time: 'O(1)–O(n)', space: 'O(1)' },
+    { id: 'list_delete',    name: 'Delete',         view: 'linkedlist', time: 'O(1)–O(n)', space: 'O(1)' },
+    { id: 'list_search',    name: 'Search',         view: 'linkedlist', time: 'O(n)', space: 'O(1)' },
+    { id: 'list_types',     name: 'Singly / Doubly / Circular', view: 'linkedlist', time: '—', space: 'O(n)' },
+  ]},
 ];

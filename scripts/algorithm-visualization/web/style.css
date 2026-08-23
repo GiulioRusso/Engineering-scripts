@@ -215,3 +215,22 @@ button:disabled { opacity: .4; cursor: default; }
   .cols { flex-direction: column; }
   #code-col { flex: none; width: 100%; }
 }
+
+/* ------------------------------------------------------- linked list ----- */
+
+.lnode { transition: transform var(--anim-ms) ease; }
+.lnode rect.box { fill: var(--c-neutral); stroke: var(--line); stroke-width: 1; }
+.lnode line.sep { stroke: var(--line); stroke-width: 1; }
+.lnode text.v { fill: var(--ink); font: 600 14px var(--mono); }
+.lnode text.p { fill: var(--ink-dim); font: 12px var(--mono); }
+.lnode.cursor rect.box { fill: var(--c-selected); }
+.lnode.cursor text.v { fill: #fff; }
+.lnode.new rect.box { fill: var(--c-frontier); }
+.lnode.new text.v, .lnode.new text.p { fill: #fff; }
+.lnode.orphan rect.box { fill: none; stroke: var(--c-error); stroke-dasharray: 4 3; }
+.lnode.orphan text.v { fill: var(--c-error); }
+
+.lledge { stroke: var(--ink-dim); stroke-width: 1.6; fill: none; }
+.lledge.hot { stroke: var(--c-selected); stroke-width: 2.4; }
+.lledge.dead { stroke: var(--c-error); stroke-dasharray: 4 3; }
+.lledge.back { stroke: var(--c-visited); stroke-width: 1.2; stroke-dasharray: 3 3; }

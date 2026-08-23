@@ -151,6 +151,13 @@ class StepBuilder {
     StepBuilder& activeThread(Val id)          { return put("activeThread", id.j); }
     StepBuilder& graphState(const std::string& rawJson) { return put("graph", rawJson); }
     StepBuilder& treeState(const std::string& rawJson)  { return put("tree", rawJson); }
+    StepBuilder& listState(const std::string& rawJson)  { return put("list", rawJson); }
+    // A named secondary list, for panels that show a different list side by side.
+    StepBuilder& listState(const std::string& name, const std::string& rawJson) {
+        if (!lists_.empty()) lists_ += ",";
+        lists_ += Val::quote(name) + ":" + rawJson;
+        return *this;
+    }
     StepBuilder& gantt(const std::string& rawJson)      { return put("gantt", rawJson); }
     StepBuilder& threads(const std::string& rawJson)    { return put("threads", rawJson); }
 
@@ -204,6 +211,7 @@ class StepBuilder {
     std::vector<std::pair<std::string, std::string>> fields_;
     std::vector<std::string> regions_;
     std::string tables_;
+    std::string lists_;
     bool emitted_ = false;
 
     friend class Tracer;
@@ -342,6 +350,7 @@ inline void StepBuilder::emit() {
         append("regions", r + "]");
     }
     if (!tables_.empty()) append("tables", "{" + tables_ + "}");
+    if (!lists_.empty()) append("lists", "{" + lists_ + "}");
 
     if (!t_->frames_.empty() && !hasField("callStack")) {
         std::string f = "[";
