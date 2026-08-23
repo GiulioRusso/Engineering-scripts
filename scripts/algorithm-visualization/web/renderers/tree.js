@@ -16,7 +16,7 @@
 
   window.RENDERERS.tree = function createTreeRenderer() {
     let svg, gEdges, gNodes, seqText;
-    let R, XS, YS, PAD, compact;
+    let R, XS, YS, PAD, TOP, compact;
     let width = 0, height = 0;
 
     const treeOf = (step, opts) =>
@@ -59,19 +59,22 @@
       YS = compact ? 42 : 62;
       PAD = R + 8;
 
-      let slots = 1, depth = 0, hasSeq = false;
+      let slots = 1, depth = 0, hasSeq = false, hasLabels = false;
       for (const s of opts.steps || []) {
         const T = treeOf(s, opts);
         if (T && T.nodes && T.nodes.length) {
           const L = layout(T);
           slots = Math.max(slots, L.slots);
           depth = Math.max(depth, L.depth);
+          if (T.nodes.some((n) => n.label)) hasLabels = true;
         }
         if (s.sequence) hasSeq = true;
       }
 
+      // Node labels sit above the circle, so the root needs headroom or they clip.
+      TOP = R + (hasLabels ? 20 : 8);
       width = PAD * 2 + slots * XS;
-      height = PAD * 2 + depth * YS + (hasSeq ? (compact ? 20 : 26) : 0);
+      height = TOP + PAD + depth * YS + (hasSeq ? (compact ? 20 : 26) : 0);
 
       container.innerHTML = '';
       svg = el('svg', { viewBox: `0 0 ${width} ${height}`, width, height }, container);
@@ -91,7 +94,7 @@
 
       const L = layout(T);
       const px = (id) => PAD + L.pos[id].x * XS + XS / 2 - (XS / 2);
-      const py = (id) => PAD + L.pos[id].depth * YS;
+      const py = (id) => TOP + L.pos[id].depth * YS;
 
       for (const n of T.nodes) {
         if (!L.pos[n.id]) continue;

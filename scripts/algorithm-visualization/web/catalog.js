@@ -44,4 +44,9 @@ window.CATALOG = [
     { id: 'bst_insert',     name: 'Insertion',      view: 'tree', time: 'O(h)', space: 'O(h)' },
     { id: 'bst_delete',     name: 'Delete (3 casi)', view: 'tree', time: 'O(h)', space: 'O(h)' },
   ]},
+  { chapter: '8 · Heap', items: [
+    { id: 'heap_heapify',   name: 'Heapify',        view: 'tree', time: 'O(log n)', space: 'O(log n)' },
+    { id: 'heap_insert',    name: 'Insert',         view: 'tree', time: 'O(log n)', space: 'O(1)' },
+    { id: 'heap_delete',    name: 'Delete',         view: 'tree', time: 'O(log n)', space: 'O(log n)' },
+  ]},
 ];

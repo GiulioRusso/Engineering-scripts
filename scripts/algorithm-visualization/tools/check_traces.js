@@ -70,8 +70,11 @@ for (const id of Object.keys(TRACES).sort()) {
       // differ in exactly the two swapped indices.
       const a = s.action;
       if (a && a.kind === 'swap' && si + 1 < input.steps.length) {
-        const cur = s.arrays && s.arrays.a;
-        const nxt = input.steps[si + 1].arrays && input.steps[si + 1].arrays.a;
+        // Whatever the primary array is called: 'a' for the sorts, 'heap' for
+        // the heap, 'data' for the stack and queue.
+        const key = s.arrays && Object.keys(s.arrays)[0];
+        const cur = key ? s.arrays[key] : null;
+        const nxt = key && input.steps[si + 1].arrays ? input.steps[si + 1].arrays[key] : null;
         if (cur && nxt && cur.length === nxt.length) {
           const diff = cur.map((v, k) => (v === nxt[k] ? -1 : k)).filter((k) => k >= 0);
           // Swapping equal values (duplicates, or i === j) is a legitimate no-op

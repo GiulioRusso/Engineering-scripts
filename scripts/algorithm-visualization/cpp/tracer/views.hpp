@@ -182,4 +182,44 @@ inline std::string naryTreeJson(N* root, const TreeMarks& m = TreeMarks()) {
     return out + "]}";
 }
 
+// ------------------------------------------------------------------ heap --
+
+// Marks keyed by array index, for structures that live in an array and are only
+// *drawn* as a tree.
+struct IndexMarks {
+    std::map<int, std::string> state;
+    std::map<int, std::string> label;
+
+    IndexMarks& set(int i, const char* s) { if (i >= 0) state[i] = s; return *this; }
+    IndexMarks& tag(int i, const std::string& l) { if (i >= 0) label[i] = l; return *this; }
+};
+
+// A heap is an array; the tree is a way of reading it. Both views are generated
+// from the same indices, so a step highlights the same element in both at once.
+//   left = 2i+1   right = 2i+2   parent = (i-1)/2
+inline std::string heapTreeJson(const int* a, int n, const IndexMarks& m = IndexMarks()) {
+    std::string out = "{\"root\":" + std::string(n > 0 ? "\"h0\"" : "\"\"") + ",\"nodes\":[";
+    for (int i = 0; i < n; ++i) {
+        if (i) out += ",";
+        out += "{\"id\":\"h" + std::to_string(i) + "\"";
+        out += ",\"value\":" + std::to_string(a[i]);
+        int l = 2 * i + 1, r = 2 * i + 2;
+        if (l < n || r < n) {
+            out += ",\"children\":[";
+            out += l < n ? "\"h" + std::to_string(l) + "\"" : "\"\"";
+            out += ",";
+            out += r < n ? "\"h" + std::to_string(r) + "\"" : "\"\"";
+            out += "]";
+        } else {
+            out += ",\"children\":[]";
+        }
+        auto it = m.state.find(i);
+        if (it != m.state.end()) out += ",\"state\":" + Val::quote(it->second);
+        auto il = m.label.find(i);
+        out += ",\"label\":" + Val::quote(il != m.label.end() ? il->second : "i=" + std::to_string(i));
+        out += "}";
+    }
+    return out + "]}";
+}
+
 }  // namespace trace
