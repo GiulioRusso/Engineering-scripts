@@ -111,7 +111,7 @@ between steps.
 
 ```
 scripts/algorithm-visualization/
-├── README.md
+├── GUIDE.md
 ├── build.sh                     # compiles everything and regenerates every trace
 ├── cpp/
 │   ├── tracer/
