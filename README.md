@@ -9,7 +9,8 @@ This repository contains **interactive Python scripts for exploring concepts acr
 ## 📂 Repository Structure
 
 * `scripts/` → Collection of Python scripts organized by topic.
-* `scripts/algorithm-visualization/` → **Algorithm Visualizer**: an animated, step-by-step player for algorithms and data structures written in C++, covering the whole *Algorithm and Data Structures* programme. Not a notebook like the rest of `scripts/`: it's vanilla HTML/JS with no dependencies — open `web/index.html` by double-clicking it, no setup required. Full docs (architecture, catalogue, how to add an algorithm): [scripts/algorithm-visualization/GUIDE.md](scripts/algorithm-visualization/GUIDE.md).
+* `visualizations/` → Collection of interactive visualizers, one folder per topic.
+* `visualizations/algorithm-visualization/` → **Algorithm Visualizer**: an animated, step-by-step player for algorithms and data structures written in C++, covering the whole *Algorithm and Data Structures* programme. Not a notebook like the rest of `scripts/`: it's vanilla HTML/JS with no dependencies — open `web/index.html` by double-clicking it, no setup required. Full docs (architecture, catalogue, how to add an algorithm): [visualizations/algorithm-visualization/GUIDE.md](visualizations/algorithm-visualization/GUIDE.md).
 
 ## ⚙️ Setup
 

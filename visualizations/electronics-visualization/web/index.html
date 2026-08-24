@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electronics Visualizer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <aside id="catalog">
+    <h1>Electronics Visualizer<small>Digital Electronics</small></h1>
+    <nav id="catalog-list"></nav>
+  </aside>
+
+  <main>
+    <header id="top">
+      <h2 id="algo-name">—</h2>
+      <span class="badge" id="badge-chapter"></span>
+      <span class="badge" id="badge-time"></span>
+      <span class="badge" id="badge-space"></span>
+      <span class="spacer"></span>
+      <label for="input-select" style="font-size:12px;color:var(--ink-dim)">input</label>
+      <select id="input-select"></select>
+      <button id="btn-theme" title="light / dark theme">◐</button>
+    </header>
+
+    <div class="cols">
+      <section id="code-col" class="card">
+        <h3>C++ Source · <span id="fn-header"></span></h3>
+        <pre id="code"></pre>
+      </section>
+
+      <section id="view-col">
+        <div class="card">
+          <h3>View</h3>
+          <div id="primary" class="viewbox"></div>
+          <div id="legend"></div>
+        </div>
+        <div id="panels"></div>
+        <div class="card" id="vars-card">
+          <h3>Variables</h3>
+          <div id="vars"></div>
+        </div>
+        <div class="card">
+          <div id="note"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="controls">
+      <button id="btn-reset" title="reset (R)">⟲</button>
+      <button id="btn-back" title="step back (←)">◀</button>
+      <button id="btn-play" title="play / pause (Space)">▶</button>
+      <button id="btn-fwd" title="step forward (→)">▶|</button>
+      <input type="range" id="scrub" min="0" max="0" value="0" title="scrub the trace">
+      <span id="step-count">0 / 0</span>
+      <label>speed <input type="range" id="speed" min="0" max="100" value="65"></label>
+    </div>
+  </main>
+
+</div>
+
+<script src="catalog.js"></script>
+<script src="renderers/array.js"></script>
+<script src="renderers/table.js"></script>
+<script src="renderers/matrix.js"></script>
+<script src="renderers/graph.js"></script>
+<script src="renderers/callstack.js"></script>
+<script src="renderers/schematic.js"></script>
+<script src="renderers/waveform.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>
